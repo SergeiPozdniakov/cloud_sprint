@@ -1,0 +1,35 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+    <style>
+        body { max-width: 400px; margin: 40px auto; font-family: Arial; }
+        .error { color: #ff4444; margin: 10px 0; }
+        input { width: 100%; padding: 8px; margin: 5px 0; }
+        button { background: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer; }
+        .signup-link { margin-top: 15px; text-align: center; }
+        a { color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h2>Вход в облачное хранилище</h2>
+    
+    <div class="error" th:if="${param.error}">
+        Неверный логин или пароль!
+    </div>
+    
+    <form method="POST" action="/login">
+        <input type="text" name="username" placeholder="Логин" required/>
+        <input type="password" name="password" placeholder="Пароль" required/>
+        <button type="submit">Войти</button>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    </form>
+
+    <!-- Ссылка на регистрацию -->
+    <div class="signup-link">
+        Нет аккаунта? <a href="/signup">Зарегистрироваться</a>
+    </div>
+</body>
+</html>

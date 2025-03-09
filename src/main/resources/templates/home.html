@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Главная</title>
+</head>
+<body>
+    <h1>Добро пожаловать, <span th:text="${#authentication.name}"></span>!</h1>
+
+    <!-- Форма загрузки файла -->
+    <form method="POST" action="/home/upload" enctype="multipart/form-data">
+        <input type="file" name="file" required/>
+        <button type="submit">Загрузить</button>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    </form>
+
+    <!-- Список файлов -->
+    <h2>Мои файлы:</h2>
+    <ul>
+        <li th:each="file : ${files}">
+            <span th:text="${file.fileName}"></span>
+            (<span th:text="${file.fileSize}"></span> байт)
+            
+            <!-- Форма удаления -->
+            <form method="POST" th:action="@{'/home/delete/' + ${file.id}}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit">Удалить</button>
+            </form>
+        </li>
+    </ul>
+</body>
+</html>

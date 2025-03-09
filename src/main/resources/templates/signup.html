@@ -1,0 +1,31 @@
+<!-- signup.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <style>
+        body { max-width: 400px; margin: 40px auto; font-family: Arial; }
+        .message { color: #4CAF50; margin: 10px 0; }
+        .error { color: #ff4444; margin: 10px 0; }
+        input { width: 100%; padding: 8px; margin: 5px 0; }
+        button { background: #008CBA; color: white; padding: 10px; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Регистрация нового пользователя</h2>
+    
+    <!-- Сообщения -->
+    <div class="message" th:if="${message}" th:text="${message}"></div>
+    <div class="error" th:if="${error}" th:text="${error}"></div>
+    
+    <form method="POST" action="/signup">
+        <input type="text" name="username" placeholder="Логин" required/>
+        <input type="password" name="password" placeholder="Пароль" required/>
+        <input type="text" name="firstName" placeholder="Имя" required/>
+        <input type="text" name="lastName" placeholder="Фамилия" required/>
+        <button type="submit">Зарегистрироваться</button>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    </form>
+</body>
+</html>
