@@ -19,21 +19,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.info("Попытка загрузки пользователя: {}", username);
+    public UserDetails loadUserByUsername(String username) {
+        Users users;
+        users = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> {
-                    logger.error("Пользователь {} не найден", username);
-                    return new UsernameNotFoundException("Пользователь не найден");
-                });
-
-        logger.info("Пользователь {} успешно загружен", username);
-
-        return User.withUsername(user.getUsername())
-                .password(user.getPassword())
-                .roles("USER") // Добавляем роль
-                .build();
+        return users; // Теперь возвращается Users, который реализует UserDetails
     }
 }
