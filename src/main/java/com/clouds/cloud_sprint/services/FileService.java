@@ -5,6 +5,7 @@ import com.clouds.cloud_sprint.model.Users;
 import com.clouds.cloud_sprint.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ public class FileService {
     @Autowired
     private FileRepository fileRepository;
 
+    @Transactional
     public File addFile(MultipartFile file, Users users) throws IOException {
         File newFile = new File();
         newFile.setFileName(file.getOriginalFilename());
@@ -25,11 +27,11 @@ public class FileService {
         newFile.setUser(users);
         return fileRepository.save(newFile);
     }
-
+    @Transactional
     public List<File> getFilesByUser(Users users) {
         return fileRepository.findByUser(users);
     }
-
+    @Transactional
     public void deleteFile(Long id) {
         fileRepository.deleteById(id);
     }
