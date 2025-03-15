@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 @Service
@@ -19,6 +23,17 @@ public class UserService {
 
     public Users createUser(Users users) {
         users.setPassword(passwordEncoder.encode(users.getPassword()));
+        String basePath = "C:\\cloud_storage";
+        String userFolderPath = basePath + "/" + users.getUsername();
+        users.setBaseFolderPath(userFolderPath);
+
+        try {
+            Path path = Paths.get(userFolderPath);
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create user folder", e);
+        }
+
         return userRepository.save(users);
     }
 

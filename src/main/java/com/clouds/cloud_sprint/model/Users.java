@@ -28,9 +28,13 @@ public class Users implements UserDetails {
     @Column(nullable = false)
     private String lastName;
 
+    @Column(nullable = false)
+    private String baseFolderPath;
+
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<File> files;
 
+    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }
@@ -71,6 +75,14 @@ public class Users implements UserDetails {
         this.lastName = lastName;
     }
 
+    public String getBaseFolderPath() {
+        return baseFolderPath;
+    }
+
+    public void setBaseFolderPath(String baseFolderPath) {
+        this.baseFolderPath = baseFolderPath;
+    }
+
     public Set<File> getFiles() {
         return files;
     }
@@ -103,5 +115,4 @@ public class Users implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }

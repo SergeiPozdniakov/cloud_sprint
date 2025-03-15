@@ -2,7 +2,6 @@ package com.clouds.cloud_sprint.model;
 
 import jakarta.persistence.*;
 
-
 @Entity
 public class File {
 
@@ -19,14 +18,14 @@ public class File {
     @Column(nullable = false)
     private long fileSize;
 
-    @Lob
     @Column(nullable = false)
-    private byte[] fileData;
+    private String filePath;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users users;
 
+    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }
@@ -59,12 +58,12 @@ public class File {
         this.fileSize = fileSize;
     }
 
-    public byte[] getFileData() {
-        return fileData;
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setFileData(byte[] fileData) {
-        this.fileData = fileData;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public Users getUser() {
