@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,18 +63,11 @@ public class HomeController {
 
         // Проверяем, существует ли файл и доступен ли он для чтения
         if (resource.exists() || resource.isReadable()) {
-            // Определяем MIME-тип файла
-            String mimeType = Files.probeContentType(path);
-
-            // Если MIME-тип не удалось определить, используем универсальный тип
-            if (mimeType == null) {
-                mimeType = "application/octet-stream";
-            }
-
-            // Возвращаем файл с правильными заголовками
+            // Кодируем имя файла для корректной передачи в заголовке
+            String fileName = URLEncoder.encode(file.getFileName(), StandardCharsets.UTF_8.toString()).replaceAll("\\+", "%20");
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
-                    .header(HttpHeaders.CONTENT_TYPE, mimeType) // MIME-тип файла
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream") // Универсальный MIME-тип
                     .body(resource);
         } else {
             throw new RuntimeException("Could not read the file!");
