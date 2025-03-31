@@ -1,6 +1,7 @@
 package com.clouds.cloud_sprint.services;
 
 import com.clouds.cloud_sprint.model.File;
+import com.clouds.cloud_sprint.model.FileUploadProgressListener;
 import com.clouds.cloud_sprint.model.Users;
 import com.clouds.cloud_sprint.FileRepository;
 import com.clouds.cloud_sprint.security.UserDetailsServiceImpl;
@@ -13,9 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -28,6 +32,9 @@ public class FileService {
     @Autowired
     private FileRepository fileRepository;
 
+    @Autowired
+    private FileUploadProgressListener progressListener;
+
     @Transactional
     public CompletableFuture<File> addFile(MultipartFile file, Users users) {
         try {
@@ -36,6 +43,9 @@ public class FileService {
                 logger.error("Файл не был загружен или пуст");
                 return CompletableFuture.failedFuture(new IllegalArgumentException("Файл не был загружен или пуст"));
             }
+
+            // Сброс прогресса перед началом загрузки
+            progressListener.reset();
 
             // Создаем директорию, если она не существует
             String userFolder = users.getBaseFolderPath();
@@ -46,7 +56,18 @@ public class FileService {
 
             // Сохраняем файл на диск
             Path filePath = Paths.get(userFolder, file.getOriginalFilename());
-            Files.write(filePath, file.getBytes());
+            try (InputStream inputStream = file.getInputStream();
+                 OutputStream outputStream = Files.newOutputStream(filePath, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    // Обновляем прогресс
+                    progressListener.update(progressListener.getBytesRead() + bytesRead, file.getSize());
+                    // Записываем данные в файл
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+            //Files.write(filePath, file.getBytes());
 
             // Создаем объект File и сохраняем его в базу данных
             File newFile = new File();
